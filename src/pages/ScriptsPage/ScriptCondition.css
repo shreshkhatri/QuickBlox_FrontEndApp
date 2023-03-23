@@ -1,0 +1,71 @@
+.queryBuilder{
+    background-color: rgb(247, 247, 253);
+    border-radius: 2px;
+}
+
+.ruleGroup{
+    padding:.5rem;
+}
+
+.ruleGroup-header{
+    font-size: .5rem;
+}
+
+.ruleGroup-header  .ruleGroup-combinators{
+    padding: .5rem;
+    margin-right: .5rem;
+    border-radius: 3px;
+    border-color: #ffffff;
+}
+
+.ruleGroup-header  .ruleGroup-addRule{
+    padding: .5rem;
+    margin-right: .3rem;
+    border-radius: 3px;
+    background-color: #3978FC;
+    border:0 !important;
+    color:#ffffff;
+    cursor: pointer;
+}
+
+.ruleGroup-header  .ruleGroup-addGroup{
+    display: none;
+}
+
+.rule{
+    background-color: rgb(247, 247, 253);
+    margin-left: 1rem;
+    margin-top: .5rem;
+    font-size: .5rem;
+    padding:.3rem;
+    border:'2px solid red' !important;
+}
+.rule-fields{
+    padding: .5rem;
+    margin-right: .5rem;
+    border-radius: 3px;
+    border-color: #ffffff;
+}
+
+.rule-operators{
+    padding: .5rem;
+    margin-right: .5rem;
+    border-radius: 3px;
+    border-color: #ffffff;
+}
+
+.rule-value{
+    padding: .5rem;
+    margin-right: .5rem;
+    border-radius: 3px;
+    border-color: #ffffff;
+}
+
+.rule-remove{
+    padding: .5rem;
+    margin-right: .5rem;
+    border-radius: 3px;
+    border: 0;
+    background-color: rgb(247, 247, 253);
+    cursor: pointer;
+}
