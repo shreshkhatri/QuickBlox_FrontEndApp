@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react'
 import { useAppStateDispatch, useAppStateContext } from '../../ApplicationContextProvider'
 import { AppTitle, SERVER_URL, regexNLP } from '../../config';
@@ -321,6 +320,7 @@ export const Botsettings = () => {
                     <ClassificationThresholdSelector sx={{ typography: 'subtitle2', padding: 2 }} settings={settings} setSettings={setSettings}></ClassificationThresholdSelector>
                 </div>
             </Box>
+            
 
             <Box sx={{ p: 1, border: '1px solid #17A2B8', mt: 1 }}>
                 <Typography align='left' sx={{ typography: 'subtitle2', fontWeight: 'bold', padding: 1 }}>Networking</Typography>
@@ -358,6 +358,7 @@ export const Botsettings = () => {
             </div>
             <br></br>
         </Box>
+        
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '1rem' }}>
             <Typography align='left' sx={{ typography: 'subtitle2' }}>Model Status</Typography>
             <ToggleButtonGroup

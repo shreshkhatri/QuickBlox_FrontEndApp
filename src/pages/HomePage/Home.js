@@ -299,7 +299,7 @@ export default function HomePage() {
         </Box>
 
       </Box>
-      <BotWidget></BotWidget>
+      {memoizedBotWidget}
     </>
   );
 }

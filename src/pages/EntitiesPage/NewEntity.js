@@ -129,7 +129,6 @@ export default function NewEntiy({setSnackBarPayload}) {
             body: JSON.stringify({
                 projectName: appState.projectName,
                 locale: appState.selectedLanguage.locale,
-                email: appState.email,
                 payload: payload
             }
             ),

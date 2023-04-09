@@ -27,6 +27,7 @@ export const Scripts = () => {
     const [listOfScripts, setListOfScripts] = useState([])
     const [clicked, setClick] = useState(true)
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' })
+
     const containerRef = useRef(null);
     const searchBoxRef = useRef('');
     const [open, setOpen] = useState(true);
@@ -227,10 +228,10 @@ export const Scripts = () => {
             }),
             credentials: 'include'
         }).then(async response => {
-            var json= await  response.json()
-            return {status:response.status,...json}
+            var json = await response.json()
+            return { status: response.status, ...json }
         }).then((response) => {
-            if (response.status===200){
+            if (response.status === 200) {
                 setOpenDialog(false)
                 deleteScriptFromList()
                 setScriptToDelete('')
@@ -244,10 +245,10 @@ export const Scripts = () => {
                     message: response.message
                 })
             }
-            
+
         })
             .catch(error => {
-                
+
                 setOpenDialog(false)
                 setScriptToDelete('')
                 setSnackBarPayload({
