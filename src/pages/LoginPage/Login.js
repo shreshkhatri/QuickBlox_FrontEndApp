@@ -106,7 +106,7 @@ export default function LoginPage() {
           var json = await response.json()
           return { status: response.status, ...json }
         }).then((jsondata) => {
-          console.log(jsondata)
+          
           if (jsondata.status === 200) {
             console.log(jsondata)
             dispatch({ type: ACTION_TYPES.SET_SELECTED_LANGUAGE, payload: { selectedLanguage: jsondata.selectedLanguage } })

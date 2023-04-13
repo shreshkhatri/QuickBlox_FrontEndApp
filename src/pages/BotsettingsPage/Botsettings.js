@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
+
+import { useState, useEffect, useRef,useMemo } from 'react'
 import { useAppStateDispatch, useAppStateContext } from '../../ApplicationContextProvider'
 import { AppTitle, SERVER_URL, regexNLP } from '../../config';
 import Typography from '@mui/material/Typography';
@@ -18,6 +19,7 @@ import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css'; //Example style, you can use another
+import { OpenAISettings } from './OpenAISettings';
 
 export const Botsettings = () => {
     const dispatcher = useAppStateDispatch()
@@ -37,6 +39,10 @@ export const Botsettings = () => {
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' });
     document.title = "Bot Settings " + AppTitle
     const [isBotServerOnline, setIsBotServerOnline] = useState(false);
+
+    const memoizedOpenAISettings = useMemo(()=>{
+        return <OpenAISettings></OpenAISettings>
+    },[])
     
 
     useEffect(() => {
@@ -358,7 +364,7 @@ export const Botsettings = () => {
             </div>
             <br></br>
         </Box>
-        
+        {memoizedOpenAISettings}
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '1rem' }}>
             <Typography align='left' sx={{ typography: 'subtitle2' }}>Model Status</Typography>
             <ToggleButtonGroup

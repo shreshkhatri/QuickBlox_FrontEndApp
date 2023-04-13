@@ -24,17 +24,22 @@ import { useNavigate } from 'react-router-dom';
 import CustomSnackbar from '../../components/CustomSnackbar';
 import StaticResponse from './StaticResponse';
 import DynamicResponse from './DynamicResponse';
-import { validateKeyDownEvent, isEmpty,checkIfActionCodeHasActionName } from '../../Objects/CommonFunctions';
+import { validateKeyDownEvent, isEmpty, checkIfActionCodeHasActionName } from '../../Objects/CommonFunctions';
 import Popover from '@mui/material/Popover';
 import Highlighter from 'react-highlight-words'
 
 export default function NewQandAData() {
     const appState = useAppStateContext()
+    const datasetGeneration = appState.settings.openAISettings.datasetGeneration.allow
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
+    const [numOfSamplesToGenerate, setNumOfSamplesToGenerate] = useState(1)
     const [responseType, setResponseType] = useState("0");
     const [currentUtterance, setCurrentUtterance] = useState('')
+    const [currentUtteranceForAug, setCurrentUtteranceForAug] = useState('')
     const [chosenToAddUtterance, setChosenToAddUtterances] = useState(false)
+    const [chosenToBulkGenerateUtterances, setChosenToBulkGenerateUtterances] = useState(false)
+    const [chosenToAddSampleAugForUtterance, setChosenToAddSampleAugForUtterance] = useState(false)
     const [topAccordionExpanded, setTopAccordionExpanded] = useState(false)
     const [anchoredElement, setAnchoredElement] = useState(null)
     const [listOfEntityNames, setListOfEntityNames] = useState([])
@@ -44,6 +49,8 @@ export default function NewQandAData() {
     const [intent, setIntent] = useState('')
     const [description, setDescription] = useState('')
     const [utterances, updateUtterances] = useState([])
+    const [utterancesForAug, updateUtterancesForAug] = useState([])
+    const [utterancesAugmented, updateUtterancesAugmented] = useState([])
     const [answers, updateAnswers] = useState([])
     const [actionName, setActionName] = useState('action_name')
     const [actionCode, setActionCode] = useState(codeTemplateGenerator('action_name'))
@@ -73,10 +80,13 @@ const ${actionName} = (session, context, params) => {
     
 module.exports = {${actionName}}`
     }
+    //upon removal of every sample sentences of utterances, the updateUtterancesAugmented must be reset
+    useEffect(() => {
+        utterancesForAug.length === 0 && updateUtterancesAugmented([])
+    }, [utterancesForAug])
 
 
     //function for updating the list of entities
-
     useEffect(() => {
         var tokens = []
         for (const utterance of utterances) {
@@ -142,7 +152,13 @@ module.exports = {${actionName}}`
             });
     }
 
-    
+    function mergeUtterances(){
+        setChosenToAddUtterances(true)
+        updateUtterances([...utterances,...utterancesAugmented])
+        updateUtterancesAugmented([])
+        updateUtterancesForAug([])
+    }
+
 
     //function for reseting the form for adding new QandAdata
     function resetNewQnAdata() {
@@ -173,6 +189,19 @@ module.exports = {${actionName}}`
         }
     }
 
+    //this function will add current utterance if the user is focused in current utterance box and press 
+    //the enter button
+    function handlekeyDownUtteranceForAug(e) {
+        if (e.key === '@') {
+            getLisOfEntityNames()
+            setAnchoredElement(e.currentTarget)
+        }
+
+        if (e.key === 'Enter') {
+            addCurrentUtteranceForAug()
+        }
+    }
+
 
     //function to add typed in utterance to the array 'utterance'
     function addCurrentUtterance() {
@@ -183,10 +212,28 @@ module.exports = {${actionName}}`
         setCurrentUtterance('')
     }
 
+    //function to add typed in utterance to the array 'utterance'
+    function addCurrentUtteranceForAug() {
+        if (isEmpty(currentUtteranceForAug)) {
+            return
+        }
+        updateUtterancesForAug([...utterancesForAug, currentUtteranceForAug])
+        setCurrentUtteranceForAug('')
+    }
+
     //function for removing already added utterance to the list
     function removeUtterance(index) {
         updateUtterances(utterances.filter((item, idx) => idx !== index))
+    }
 
+    //function for removing augmented utterances from the list
+    function removeUtteranceAugmented(index) {
+        updateUtterancesAugmented(utterancesAugmented.filter((item, idx) => idx !== index))
+    }
+
+    //function for removing already added utterance to the list
+    function removeUtteranceForAug(index) {
+        updateUtterancesForAug(utterancesForAug.filter((item, idx) => idx !== index))
     }
 
     //function to upload and save new QandA data
@@ -261,7 +308,7 @@ module.exports = {${actionName}}`
                     message: jsondata.message
                 })
             }
-             else if (jsondata.status === 500) {
+            else if (jsondata.status === 500) {
                 setSnackBarPayload({
                     open: true,
                     severity: "error",
@@ -330,6 +377,56 @@ module.exports = {${actionName}}`
 
     }
 
+    //function for sending sample utterances and retrieving back the generated uttterances from the model
+    async function generateBulkUtterances() {
+        setLoading(true)
+        await fetch(SERVER_URL + '/get-openAI-bulk-utterance-generation', {
+            method: "POST",
+            redirect: 'follow',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'charset': 'UTF-8'
+            },
+            body: JSON.stringify({
+                projectName: appState.projectName,
+                locale: appState.selectedLanguage.locale,
+                utterancesForAug,
+                numOfSamplesToGenerate
+            }
+            ),
+            credentials: 'include'
+        }).then(async response => {
+            var data = await response.json()
+            return { status: response.status, data }
+        }).then((jsondata) => {
+            //console.log(jsondata)
+            if (jsondata.status === 200) {
+                updateUtterancesAugmented(jsondata.data)
+            }
+            else {
+                setSnackBarPayload({
+                    open: true,
+                    severity: "error",
+                    message: jsondata.message
+                })
+            }
+            setLoading(false)
+
+        })
+            .catch(error => {
+                console.log(error)
+                setLoading(false)
+                setSnackBarPayload({
+                    open: true,
+                    severity: "error",
+                    message: 'Connection error occured while trying to retrieve bluk uterances'
+                })
+            });
+
+
+    }
+
     //function to append the selected entity to the text
     function selectEntity(entityIndex) {
         var entity = '@' + listOfEntityNames[entityIndex].entity
@@ -385,7 +482,7 @@ module.exports = {${actionName}}`
                             <ListItem className='listItem'>
                                 <ListItemText sx={{ textAlign: 'center' }}>
                                     No Utterance added yet.<br></br>
-                                    <Button onClick={() => setChosenToAddUtterances(true)}>Add Utterance</Button></ListItemText>
+                                    <Button onClick={() => setChosenToAddUtterances(true)}>Add Utterance Manually</Button></ListItemText>
                             </ListItem>
                         }
 
@@ -455,6 +552,141 @@ module.exports = {${actionName}}`
                         })
                         }
                     </List>
+                    {!datasetGeneration && <Typography align='center' sx={{ typography: 'subtitle', p: 1 }}>Utterances can be quickly created by using the AI language model. You can go to settings and allow data generation option to use the feature.</Typography>}
+                    {datasetGeneration &&
+                        <Box sx={{ p: 1 }}>
+                            <Typography align='center' sx={{ typography: 'subtitle', p: 1 }}>Or</Typography>
+                            <List style={{ border: '1px solid #54B4D3', borderRadius: '.3rem', padding: 0 }}>
+                                {(!chosenToAddSampleAugForUtterance && utterancesForAug.length === 0) &&
+                                    <ListItem className='listItem' key={99999999}>
+                                        <ListItemText sx={{ textAlign: 'center' }}>
+                                            No Sample Utterance added yet.<br></br>
+                                            <Button onClick={() => setChosenToAddSampleAugForUtterance(true)}>Add sample utterances for bulk response generation</Button></ListItemText>
+                                    </ListItem>
+                                }
+
+                                {chosenToAddSampleAugForUtterance &&
+                                    <ListItem className='listItem'>
+                                        <ListItemText sx={{ paddingRight: 4 }} >
+                                            <TextField
+                                                size='small'
+                                                margin="normal"
+                                                fullWidth
+                                                name="current-sample-aug-utterance"
+                                                label="Type your sample utterance here"
+                                                autoComplete='off'
+                                                id="current-utterance-for-aug"
+                                                value={currentUtteranceForAug}
+                                                onChange={e => setCurrentUtteranceForAug(e.target.value)}
+                                                onKeyDown={e => handlekeyDownUtteranceForAug(e)}
+                                            />
+                                            <Popover
+                                                id='popover'
+                                                open={Boolean(anchoredElement)}
+                                                anchorEl={anchoredElement}
+                                                onClose={handleClose}
+                                                anchorOrigin={{
+                                                    vertical: 'bottom',
+                                                    horizontal: 'center',
+                                                }}
+                                            >
+                                                <Typography align='center' sx={{ typography: 'subtitle2', p: 1, fontWeight: 'bold' }}>Suggested Entities</Typography>
+                                                <Box sx={{ maxHeight: 'calc(100vh*.3)', overflowY: 'scroll' }}>
+                                                    {
+                                                        listOfEntityNames.length === 0 &&
+                                                        <ListItem key={0}>
+                                                            <ListItemText sx={{ textAlign: 'center' }}>
+                                                                <Typography align='center' sx={{ typography: 'subtitle2', p: 1 }}>No entities found</Typography>
+                                                            </ListItemText>
+                                                        </ListItem>
+                                                    }
+                                                    {
+                                                        listOfEntityNames.length > 0 &&
+                                                        <List style={{ padding: 0 }}>
+                                                            {listOfEntityNames.map(({ entity }, index) => {
+                                                                return <ListItem key={index}>
+                                                                    <ListItemText sx={{ textAlign: 'left' }} onClick={() => selectEntity(index)}>
+                                                                        <Typography align='left' sx={{ typography: 'subtitle2', p: 0 }}>{entity}</Typography>
+                                                                    </ListItemText>
+                                                                </ListItem>
+                                                            })
+                                                            }
+                                                        </List>
+
+                                                    }
+                                                </Box>
+                                            </Popover>
+                                        </ListItemText>
+                                        <ListItemSecondaryAction>
+                                            <Button onClick={() => addCurrentUtteranceForAug()}>Add</Button>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>}
+                                {utterancesForAug.reverse().map((utterance, index) => {
+                                    return <ListItem className='listItem' key={index}>
+                                        <ListItemText sx={{ maxWidth: '80%' }}>{index + 1}.
+                                            <Highlighter searchWords={usedEntitiesUtterance} autoEscape={true} textToHighlight={utterance} />
+                                        </ListItemText>
+                                        <ListItemSecondaryAction><ClearIcon style={{ cursor: 'pointer' }} onClick={() => removeUtteranceForAug(index)} /></ListItemSecondaryAction>
+                                    </ListItem>
+                                })
+                                }
+                                {
+                                    utterancesForAug.length > 0 &&
+                                    <ListItem className='listItem' key={999999991}>
+                                        <Button variant="text" onClick={() => setChosenToBulkGenerateUtterances(true)}>Generate bulk utterances</Button>
+                                    </ListItem>
+
+                                }
+                                {utterancesForAug.length > 0 && chosenToBulkGenerateUtterances &&
+                                    <ListItem className='listItem' key={999999990}>
+                                        <TextField
+                                            size='small'
+                                            margin="normal"
+                                            fullWidth
+                                            type='number'
+                                            name="um-of-samples"
+                                            label="Specify number of samples to generate per sample"
+                                            autoComplete='off'
+                                            id="num-of-samples-to-generate"
+                                            value={numOfSamplesToGenerate}
+                                            onChange={e => setNumOfSamplesToGenerate(e.target.value)}
+                                        />
+                                        <LoadingButton
+                                            size="small"
+                                            onClick={() => generateBulkUtterances()}
+                                            loading={loading}
+                                            loadingIndicator="Generating..."
+                                            variant="contained"
+                                            sx={{ m: 1 }}
+                                        >
+                                            <span>Generate Bulk Utterances</span>
+                                        </LoadingButton>
+                                    </ListItem>
+
+                                }
+
+                            </List>
+
+                            {utterancesForAug.length > 0 && utterancesAugmented.length > 0 &&
+                                <List>
+                                    {utterancesAugmented.map((utterance, index) => {
+                                        return <ListItem className='listItem' key={index}>
+                                            <ListItemText sx={{ maxWidth: '80%' }}>{index + 1}.
+                                                {utterance}
+                                            </ListItemText>
+                                            <ListItemSecondaryAction><ClearIcon style={{ cursor: 'pointer' }} onClick={() => removeUtteranceAugmented(index)} /></ListItemSecondaryAction>
+                                        </ListItem>
+                                    })
+                                    }
+                                    <ListItem className='listItem' key={999999020}>
+                                        <ListItemSecondaryAction><Button onClick={mergeUtterances}>Merge with the existing utterances</Button></ListItemSecondaryAction>
+                                    </ListItem>
+                                </List>}
+
+                        </Box>
+
+                    }
+
                     <br></br>
                     <Typography component='h6' variant='h6'>Response Type</Typography>
 
