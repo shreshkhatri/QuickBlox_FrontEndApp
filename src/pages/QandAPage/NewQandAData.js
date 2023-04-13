@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect,useMemo } from 'react'
 import { useAppStateDispatch, useAppStateContext } from '../../ApplicationContextProvider'
 import { SERVER_URL } from '../../config';
 import Typography from '@mui/material/Typography';
@@ -57,7 +57,6 @@ export default function NewQandAData() {
     const [actionNameAlreadyExists, setActionNameAlreadyExists] = useState(false)
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' })
     //console.log(usedEntitiesUtterance)
-    console.log('child')
     const handleClose = () => {
         setAnchoredElement(null);
     };
@@ -80,6 +79,17 @@ const ${actionName} = (session, context, params) => {
     
 module.exports = {${actionName}}`
     }
+
+
+    const memoisedStaticResponse = useMemo(()=>{
+        return <StaticResponse
+                        answers={answers}
+                        updateAnswers={updateAnswers}
+                        usedEntitiesUtterance={usedEntitiesUtterance}
+                        setUsedEntitiesUtterance={setUsedEntitiesUtterance}
+                    />
+
+    },[answers,usedEntitiesUtterance]);
     //upon removal of every sample sentences of utterances, the updateUtterancesAugmented must be reset
     useEffect(() => {
         utterancesForAug.length === 0 && updateUtterancesAugmented([])
@@ -398,11 +408,11 @@ module.exports = {${actionName}}`
             credentials: 'include'
         }).then(async response => {
             var data = await response.json()
-            return { status: response.status, data }
+            return { status: response.status, ...data }
         }).then((jsondata) => {
-            //console.log(jsondata)
+            
             if (jsondata.status === 200) {
-                updateUtterancesAugmented(jsondata.data)
+                updateUtterancesAugmented(jsondata.augmentedUtterancesList)
             }
             else {
                 setSnackBarPayload({
@@ -706,11 +716,7 @@ module.exports = {${actionName}}`
                         </FormControl>
                     </Box>
                     <br></br>
-                    {responseType === "0" && <StaticResponse
-                        answers={answers}
-                        updateAnswers={updateAnswers}
-                        usedEntitiesUtterance={usedEntitiesUtterance}
-                    />}
+                    {responseType === "0" && memoisedStaticResponse}
                     {responseType === "1" && <DynamicResponse
                         actionName={actionName}
                         setActionName={setActionName}
