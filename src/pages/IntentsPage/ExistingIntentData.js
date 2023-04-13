@@ -112,7 +112,7 @@ async function updateIntentData() {
             payload: payload
         }
         ),
-        credentials: 'include'
+        
     }).then(response => {
         return response.json()
     }).then((jsondata) => {

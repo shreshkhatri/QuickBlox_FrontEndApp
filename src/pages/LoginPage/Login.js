@@ -66,7 +66,7 @@ export default function LoginPage() {
                 'charset': 'UTF-8'
             },
             body: JSON.stringify({ useremail: useremail, password: password }),
-            credentials: 'include'
+            
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -101,7 +101,7 @@ export default function LoginPage() {
             'Content-Type': 'application/json',
             'charset': 'UTF-8'
           },
-          credentials: 'include'
+          
         }).then(async (response) => {
           var json = await response.json()
           return { status: response.status, ...json }

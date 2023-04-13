@@ -115,7 +115,7 @@ module.exports = {${actionName}}`
                 actionName: actionName
             }
             ),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             json.status = response.status
@@ -241,7 +241,7 @@ module.exports = {${actionName}}`
                 payload: payload
             }
             ),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             json.status = response.status
@@ -298,7 +298,7 @@ module.exports = {${actionName}}`
                 email: appState.email,
             }
             ),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             json.status = response.status

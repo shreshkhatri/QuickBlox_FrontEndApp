@@ -132,7 +132,7 @@ export default function NewEntiy({setSnackBarPayload}) {
                 payload: payload
             }
             ),
-            credentials: 'include'
+            
         }).then(response => {
             return response.json()
         }).then((jsondata) => {

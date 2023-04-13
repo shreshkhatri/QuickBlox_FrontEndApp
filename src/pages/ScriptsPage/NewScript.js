@@ -109,7 +109,7 @@ function NewScript() {
                     projectName: appState.projectName,
                     locale: appState.selectedLanguage.locale
                 }),
-                credentials: 'include'
+                
             }).then(response => {
                 if (response.status === 200) {
                     return response.json()
@@ -168,7 +168,7 @@ function NewScript() {
                 payload: payload
             } 
             ),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             return {status:response.status,...json}

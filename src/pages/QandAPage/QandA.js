@@ -59,7 +59,7 @@ export const QandA = () => {
                 projectName: appState.projectName,
                 locale: appState.selectedLanguage.locale,
             }),
-            credentials: 'include'
+            
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -121,7 +121,7 @@ export const QandA = () => {
                     currentPage: currentPage,
                     batchSize: batchSize
                 }),
-                credentials: 'include'
+                
             }).then(async response => {
 
                 var json = await response.json()
@@ -184,7 +184,7 @@ export const QandA = () => {
                 locale: appState.selectedLanguage.locale,
                 searchText: searchBoxRef.current
             }),
-            credentials: 'include'
+            
         }).then(async response => {
 
             var json = await response.json()
@@ -255,7 +255,7 @@ export const QandA = () => {
                 locale: appState.selectedLanguage.locale,
                 intent: intentToDelete
             }),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
 

@@ -47,7 +47,7 @@ export default function BotWidget({props,children}) {
           'Content-Type': 'application/json',
           'charset': 'UTF-8'
         },
-        credentials: 'include'
+        
       }).then(async response => {
         var json = await response.json()
         json.status = response.status
@@ -107,7 +107,7 @@ export default function BotWidget({props,children}) {
         locale: 'en',
         text: message
       }),
-      credentials: 'include'
+      
     }).then(async response => {
       var json = await response.json()
       json.status = response.status
@@ -137,7 +137,7 @@ export default function BotWidget({props,children}) {
         'Content-Type': 'application/json',
         'charset': 'UTF-8'
       },
-      credentials: 'include'
+      
     }).then(async response => {
       var json = await response.json()
       json.status = response.status

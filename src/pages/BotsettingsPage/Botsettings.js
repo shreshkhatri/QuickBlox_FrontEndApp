@@ -74,7 +74,7 @@ export const Botsettings = () => {
             body: JSON.stringify({
                 projectName
             }),
-            credentials: 'include'
+            
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -123,7 +123,7 @@ export const Botsettings = () => {
                 projectName,
                 settings: { ...settings, botName, botServerPort: parseInt(botServerPort) }
             }),
-            credentials: 'include'
+            
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -180,7 +180,7 @@ export const Botsettings = () => {
                 locale: appState.selectedLanguage.locale
             }
             ),
-            credentials: 'include'
+            
         }).then(async response => {
             const json = await response.json()
             return { status: response.status, ...json }
@@ -240,7 +240,7 @@ export const Botsettings = () => {
                 isBotServerOnline: requestedChange
             }
             ),
-            credentials: 'include'
+            
         }).then(async response => {
             const json = await response.json()
             return { status: response.status, ...json }

@@ -56,7 +56,7 @@ export const Scripts = () => {
                 projectName: appState.projectName,
                 locale: appState.selectedLanguage.locale,
             }),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -113,7 +113,7 @@ export const Scripts = () => {
                     currentPage: currentPage,
                     batchSize: batchSize
                 }),
-                credentials: 'include'
+                
             }).then(async response => {
                 var json = await response.json()
                 return { status: response.status, json }
@@ -177,7 +177,7 @@ export const Scripts = () => {
                 locale: appState.selectedLanguage.locale,
                 searchText: searchBoxRef.current
             }),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             return { status: response.status, json }
@@ -226,7 +226,7 @@ export const Scripts = () => {
                 email: appState.email,
                 scriptName: scriptToDelete
             }),
-            credentials: 'include'
+            
         }).then(async response => {
             var json = await response.json()
             return { status: response.status, ...json }
