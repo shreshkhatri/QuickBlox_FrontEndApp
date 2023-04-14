@@ -31,4 +31,4 @@ jobs:
           cd /home/ubuntu/QuickBlox_FrontEndApp
           git status
           npm install
-          npm build
+          npm run build
