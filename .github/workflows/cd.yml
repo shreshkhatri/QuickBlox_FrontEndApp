@@ -25,8 +25,10 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
+          cd /home/ubuntu/
+          rm -rf QuickBlox_FrontEndApp
+          git clone git@github.com:shreshkhatri/QuickBlox_FrontEndApp.git
           cd /home/ubuntu/QuickBlox_FrontEndApp
-          git pull origin main
           git status
           npm install
           npm build
