@@ -54,7 +54,7 @@ export default function ScriptDynamicResponse(props) {
                 actionName: actionName
             }
             ),
-            
+            credentials:'include'
         }).then(async response => {
             var json = await response.json()
 

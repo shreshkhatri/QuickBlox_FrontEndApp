@@ -36,7 +36,7 @@ export const Entities = () => {
                     locale: appState.selectedLanguage.locale,
                     email: appState.email,
                 }),
-                
+                credentials:'include'
             }).then(response => {
 
                 if (response.status === 200) {

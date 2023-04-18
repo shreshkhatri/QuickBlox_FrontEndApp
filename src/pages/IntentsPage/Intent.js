@@ -48,7 +48,7 @@ export const Intents = () => {
                     projectName: appState.projectName,
                     locale: appState.selectedLanguage.locale
                 }),
-                
+                credentials:'include'
             }).then(response => {
                 if (response.status === 200) {
                     return response.json()
