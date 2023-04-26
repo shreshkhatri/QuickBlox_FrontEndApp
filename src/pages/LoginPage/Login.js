@@ -106,12 +106,12 @@ export default function LoginPage() {
           var json = await response.json()
           return { status: response.status, ...json }
         }).then((jsondata) => {
-          console.log(jsondata)
+          
           if (jsondata.status === 200) {
             console.log(jsondata)
             dispatch({ type: ACTION_TYPES.SET_SELECTED_LANGUAGE, payload: { selectedLanguage: jsondata.selectedLanguage } })
             dispatch({ type: ACTION_TYPES.SET_PROJECT, payload: { projectName: jsondata.projectName } })
-            dispatch({ type: ACTION_TYPES.SET_SETTINGS, payload: { settings: jsondata.settings } })
+            dispatch({ type: ACTION_TYPES.SET_SETTINGS, payload: { settings: JSON.parse(JSON.stringify(jsondata.settings)) } })
             dispatch({ type: ACTION_TYPES.SET_MODEL_TRAINABLE, payload: { modelTrainable: jsondata.modelTrainable } })
             dispatch({ type: ACTION_TYPES.SET_PROJECT_DATA_EDITABLE, payload: { projectSettingsEditable: jsondata.projectSettingsEditable } })
             return true

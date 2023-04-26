@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+
+import { useState, useEffect, useRef,useMemo } from 'react'
 import { useAppStateDispatch, useAppStateContext } from '../../ApplicationContextProvider'
-import { AppTitle, SERVER_URL, regexNLP } from '../../config';
+import { AppTitle, SERVER_URL, BOT_SERVER_URL, regexNLP } from '../../config';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +19,7 @@ import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-clike';
 import 'prismjs/components/prism-javascript';
 import 'prismjs/themes/prism.css'; //Example style, you can use another
+import { OpenAISettings } from './OpenAISettings';
 
 export const Botsettings = () => {
     const dispatcher = useAppStateDispatch()
@@ -37,6 +39,10 @@ export const Botsettings = () => {
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' });
     document.title = "Bot Settings " + AppTitle
     const [isBotServerOnline, setIsBotServerOnline] = useState(false);
+
+    const memoizedOpenAISettings = useMemo(()=>{
+        return <OpenAISettings></OpenAISettings>
+    },[])
     
 
     useEffect(() => {
@@ -339,7 +345,7 @@ export const Botsettings = () => {
                     onChange={(e) => setBotServerPort(e.target.value)}
                     autoFocus
                 />
-                 { botServerPort && botServerPort>3000 && botServerPort<5000 && <Typography align='left' sx={{ typography: 'subtitle2',p:1 }}>The bot will be accessible at the link <br></br><br></br> : http://localhost:{botServerPort}/directline/conversations</Typography>}
+                 { botServerPort && botServerPort>3000 && botServerPort<5000 && <Typography align='left' sx={{ typography: 'subtitle2',p:1 }}>The bot will be accessible at the link <br></br><br></br> : {BOT_SERVER_URL}:{botServerPort}/directline/conversations</Typography>}
             </Box>
             <div style={{
                 display: 'flex',
@@ -359,7 +365,7 @@ export const Botsettings = () => {
             </div>
             <br></br>
         </Box>
-        
+        {memoizedOpenAISettings}
         <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: '1rem' }}>
             <Typography align='left' sx={{ typography: 'subtitle2' }}>Model Status</Typography>
             <ToggleButtonGroup
