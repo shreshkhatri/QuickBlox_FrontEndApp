@@ -30,5 +30,6 @@ jobs:
           git clone git@github.com:shreshkhatri/QuickBlox_FrontEndApp.git
           cd /home/ubuntu/QuickBlox_FrontEndApp
           git status
+          cp -p /home/ubuntu/config.js /home/ubuntu/QuickBlox_FrontEndApp/src/
           npm install
           npm run build
