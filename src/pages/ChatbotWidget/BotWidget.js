@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import CustomSnackbar from '../../components/CustomSnackbar';
 import { useAppStateDispatch, useAppStateContext } from '../../ApplicationContextProvider'
 import 'react-chat-widget/lib/styles.css';
+import { BOT_SERVER_URL } from '../../config';
 
 export default function BotWidget({props,children}) {
   const dispatch = useAppStateDispatch()
@@ -17,8 +18,8 @@ export default function BotWidget({props,children}) {
   const [currentMessageIndex, updateCurrentMessageIndex] = useState(-1)
   const currentMessageIndexRef = useRef();
   const [currentBotServerPort,setCurrentBotServerPort] = useState(appState.settings.hasOwnProperty('currentBotServerPort') && appState['settings']['currentBotServerPort'] || null)
-  const [URL_GET_CONVERSATION_ID,setURL_GET_CONVERSATION_ID] = useState(`http://localhost:${currentBotServerPort}/directline/conversations`)
-  const [COMMUNICATION_ENDPOINT,setCOMMUNICATION_ENDPOINT] = useState(`http://localhost:${currentBotServerPort}/directline/conversations/${conversationID}/activities`)
+  const [URL_GET_CONVERSATION_ID,setURL_GET_CONVERSATION_ID] = useState(`${BOT_SERVER_URL}:${currentBotServerPort}/directline/conversations`)
+  const [COMMUNICATION_ENDPOINT,setCOMMUNICATION_ENDPOINT] = useState(`${BOT_SERVER_URL}:${currentBotServerPort}/directline/conversations/${conversationID}/activities`)
   currentMessageIndexRef.current = currentMessageIndex
   console.log(children)
   console.log('Widget reloaded')
@@ -33,7 +34,7 @@ export default function BotWidget({props,children}) {
   // an effect to display some information in case obtaining the conversation ID process fails
   useEffect(() => {
     if (!conversationID) {
-      setCOMMUNICATION_ENDPOINT(`http://localhost:${currentBotServerPort}/directline/conversations/${conversationID}/activities`)
+      setCOMMUNICATION_ENDPOINT(`${BOT_SERVER_URL}:${currentBotServerPort}/directline/conversations/${conversationID}/activities`)
     }
   }, [conversationID]);
 
