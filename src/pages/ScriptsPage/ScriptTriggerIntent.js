@@ -40,7 +40,7 @@ export default function ScriptTriggerIntent(props) {
                     projectName: appState.projectName,
                     locale: appState.selectedLanguage.locale
                 }),
-                credentials: 'include'
+                credentials:'include'
             }).then(response => {
                 if (response.status === 200) {
                     return response.json()
