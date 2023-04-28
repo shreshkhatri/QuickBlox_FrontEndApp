@@ -6,7 +6,7 @@ name: Node.js CD
 on:
   # Triggers the workflow on push request events but only for the main branch
   push:
-    branches: [ cd ]
+    branches: [ main ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -25,8 +25,11 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }}
         port: 22
         script: |
-          cd ~/home/ubuntu/QuickBlox_FrontEndApp
-          git pull origin main
+          cd /home/ubuntu/
+          rm -rf QuickBlox_FrontEndApp
+          git clone git@github.com:shreshkhatri/QuickBlox_FrontEndApp.git
+          cd /home/ubuntu/QuickBlox_FrontEndApp
           git status
+          cp -p /home/ubuntu/config.js /home/ubuntu/QuickBlox_FrontEndApp/src/
           npm install
-          npm build
+          npm run build
