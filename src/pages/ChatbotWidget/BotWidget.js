@@ -184,7 +184,6 @@ export default function BotWidget({ props, children }) {
   //function that will be triggered when the user sends the typed message on the widget
   function handleNewUserMessage(newMessage) {
     sendMessage(newMessage)
-
   }
 
   return (<>
