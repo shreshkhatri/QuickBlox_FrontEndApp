@@ -115,7 +115,7 @@ import ScriptTriggerIntent from './ScriptTriggerIntent';
                     projectName: appState.projectName,
                     locale: appState.selectedLanguage.locale
                 }),
-                credentials: 'include'
+                credentials:'include'
             }).then(response => {
                 if (response.status === 200) {
                     return response.json()
@@ -174,7 +174,7 @@ import ScriptTriggerIntent from './ScriptTriggerIntent';
                 payload: payload
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(response => {
             return response.json()
         }).then((jsondata) => {

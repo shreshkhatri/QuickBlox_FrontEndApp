@@ -28,7 +28,7 @@ export const BotTesting = () => {
                 'charset': 'UTF-8'
             },
             body: JSON.stringify({ incoming_message: message }),
-            credentials: 'include'
+            credentials:'include'
         }).then(response => {
             if (response.status == 200) {
                 return response.json()

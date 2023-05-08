@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useRef,useMemo } from 'react'
 import { useAppStateDispatch, useAppStateContext } from '../../ApplicationContextProvider'
-import { AppTitle, SERVER_URL, regexNLP } from '../../config';
+import { AppTitle, SERVER_URL, BOT_SERVER_URL, regexNLP } from '../../config';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { useNavigate } from 'react-router-dom';
@@ -80,7 +80,7 @@ export const Botsettings = () => {
             body: JSON.stringify({
                 projectName
             }),
-            credentials: 'include'
+            credentials:'include'
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -129,7 +129,7 @@ export const Botsettings = () => {
                 projectName,
                 settings: { ...settings, botName, botServerPort: parseInt(botServerPort) }
             }),
-            credentials: 'include'
+            credentials:'include'
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -186,7 +186,8 @@ export const Botsettings = () => {
                 locale: appState.selectedLanguage.locale
             }
             ),
-            credentials: 'include'
+            credentials:'include'
+            
         }).then(async response => {
             const json = await response.json()
             return { status: response.status, ...json }
@@ -246,7 +247,7 @@ export const Botsettings = () => {
                 isBotServerOnline: requestedChange
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(async response => {
             const json = await response.json()
             return { status: response.status, ...json }
@@ -344,7 +345,7 @@ export const Botsettings = () => {
                     onChange={(e) => setBotServerPort(e.target.value)}
                     autoFocus
                 />
-                 { botServerPort && botServerPort>3000 && botServerPort<5000 && <Typography align='left' sx={{ typography: 'subtitle2',p:1 }}>The bot will be accessible at the link <br></br><br></br> : http://localhost:{botServerPort}/directline/conversations</Typography>}
+                 { botServerPort && botServerPort>3000 && botServerPort<5000 && <Typography align='left' sx={{ typography: 'subtitle2',p:1 }}>The bot will be accessible at the link <br></br><br></br> : {BOT_SERVER_URL}:{botServerPort}/directline/conversations</Typography>}
             </Box>
             <div style={{
                 display: 'flex',

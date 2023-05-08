@@ -125,7 +125,7 @@ export default function NewIntent() {
                 payload: payload
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(response => {
             return response.json()
         }).then((jsondata) => {
@@ -171,7 +171,7 @@ export default function NewIntent() {
                 email: appState.email,
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(response => {
             return response.json()
         }).then((jsondata) => {

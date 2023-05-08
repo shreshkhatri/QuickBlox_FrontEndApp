@@ -122,7 +122,7 @@ console.log(synonymDefinitions)
                 payload: payload
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(response => {
             return response.json()
         }).then((jsondata) => {

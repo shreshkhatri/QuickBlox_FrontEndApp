@@ -85,7 +85,7 @@ const ExistingQandAData = (props) => {
                 actionName: actionName
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(async response => {
             var json = await response.json()
             json.status = response.status
@@ -152,7 +152,7 @@ const ExistingQandAData = (props) => {
                 payload: payload
             }
             ),
-            credentials: 'include'
+            credentials:'include'
         }).then(async response => {
             var json = await response.json()
             json.status = response.status
