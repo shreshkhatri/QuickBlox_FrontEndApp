@@ -48,7 +48,6 @@ export default function LoginPage() {
     const [loginResponse, setLoginResponse] = useState(null)
     const [isLoggedIn,setIsLoggedIn] = useState(false)
     const [isProjectDataLoaded,setIsProjectDataLoaded]=useState(false)
-    const [rememberMe,setRememberMe] = useState(false);
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -66,7 +65,7 @@ export default function LoginPage() {
                 'Content-Type': 'application/json',
                 'charset': 'UTF-8'
             },
-            body: JSON.stringify({ useremail,password,rememberMe }),
+            body: JSON.stringify({ useremail: useremail, password: password }),
             credentials: 'include'
         }).then(async (response) => {
             var json = await response.json()
@@ -225,7 +224,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox value="remember" color="primary" onChange={()=>setRememberMe(!rememberMe)} />}
+                                    control={<Checkbox value="remember" color="primary" />}
                                     label="Remember me"
                                 />
                                 {loginResponse &&
