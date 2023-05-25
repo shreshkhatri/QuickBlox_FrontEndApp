@@ -45,9 +45,12 @@ export default function LoginPage() {
     const [useremail, setUseremail] = useState('')
     const [signinIn, setSigninIn] = useState(false)
     const [password, setPassword] = useState('')
+    const [rememberMe,setRememberMe] = useState(false);
     const [loginResponse, setLoginResponse] = useState(null)
     const [isLoggedIn,setIsLoggedIn] = useState(false)
     const [isProjectDataLoaded,setIsProjectDataLoaded]=useState(false)
+
+    console.log(appState)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -65,8 +68,8 @@ export default function LoginPage() {
                 'Content-Type': 'application/json',
                 'charset': 'UTF-8'
             },
-            body: JSON.stringify({ useremail: useremail, password: password }),
-            credentials:'include'
+            body: JSON.stringify({ useremail,password ,rememberMe }),
+            credentials: 'include'
         }).then(async (response) => {
             var json = await response.json()
             return { status: response.status, ...json }
@@ -92,50 +95,6 @@ export default function LoginPage() {
     }
 
 
-    async function loadProjectData() {
-        return await fetch(SERVER_URL + '/get-project-data', {
-          method: "GET",
-          redirect: 'follow',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'charset': 'UTF-8'
-          },
-          credentials:'include'
-        }).then(async (response) => {
-          var json = await response.json()
-          return { status: response.status, ...json }
-        }).then((jsondata) => {
-          console.log(jsondata)
-          if (jsondata.status === 200) {
-            console.log(jsondata)
-            dispatch({ type: ACTION_TYPES.SET_SELECTED_LANGUAGE, payload: { selectedLanguage: jsondata.selectedLanguage } })
-            dispatch({ type: ACTION_TYPES.SET_PROJECT, payload: { projectName: jsondata.projectName } })
-            dispatch({ type: ACTION_TYPES.SET_SETTINGS, payload: { settings: jsondata.settings } })
-            dispatch({ type: ACTION_TYPES.SET_MODEL_TRAINABLE, payload: { modelTrainable: jsondata.modelTrainable } })
-            dispatch({ type: ACTION_TYPES.SET_PROJECT_DATA_EDITABLE, payload: { projectSettingsEditable: jsondata.projectSettingsEditable } })
-            return true
-          }
-          else {
-            navigate('/error', { state: { ...jsondata } })
-            return false
-          }
-        })
-          .catch(error => {
-  
-            navigate('/error', {
-              state: {
-                status: '',
-                severity: 'error',
-                message: 'Connection error occured while obtaining the Project details'
-              }
-            }
-            )
-            return false
-          }
-          );
-      }
-
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -147,16 +106,12 @@ export default function LoginPage() {
             setSigninIn(false)
             return
         }
-        const loadProjectDataResponse = await loadProjectData()
         setIsLoggedIn(loginResponse)
-        setIsProjectDataLoaded(loadProjectDataResponse)
-        console.log('Login response ', loginResponse)
-        console.log('PageLoad response ', loadProjectDataResponse)
-
         setSigninIn(false)
+        
     };
 
-    if (isLoggedIn && isProjectDataLoaded) {
+    if (isLoggedIn) {
         return <Navigate to="/" replace />;
     }
     else if (pageLoading) {
@@ -224,7 +179,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <FormControlLabel
-                                    control={<Checkbox value="remember" color="primary" />}
+                                    control={<Checkbox value="remember" color="primary" onChange={()=>setRememberMe(!rememberMe)} />}
                                     label="Remember me"
                                 />
                                 {loginResponse &&

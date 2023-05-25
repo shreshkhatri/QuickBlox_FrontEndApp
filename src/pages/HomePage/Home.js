@@ -133,6 +133,7 @@ export default function HomePage() {
 
     return <Navigate to="/" replace />;
   }
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -140,6 +141,49 @@ export default function HomePage() {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  useEffect(async() =>{
+    await fetch(SERVER_URL + '/get-project-data', {
+      method: "GET",
+      redirect: 'follow',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'charset': 'UTF-8'
+      },
+      credentials: 'include'
+    }).then(async (response) => {
+      var json = await response.json()
+      return { status: response.status, ...json }
+    }).then((jsondata) => {
+      
+      if (jsondata.status === 200) {
+        console.log(jsondata)
+        dispatch({ type: ACTION_TYPES.SET_SELECTED_LANGUAGE, payload: { selectedLanguage: jsondata.selectedLanguage } })
+        dispatch({ type: ACTION_TYPES.SET_PROJECT, payload: { projectName: jsondata.projectName } })
+        dispatch({ type: ACTION_TYPES.SET_SETTINGS, payload: { settings: JSON.parse(JSON.stringify(jsondata.settings)) } })
+        dispatch({ type: ACTION_TYPES.SET_MODEL_TRAINABLE, payload: { modelTrainable: jsondata.modelTrainable } })
+        dispatch({ type: ACTION_TYPES.SET_PROJECT_DATA_EDITABLE, payload: { projectSettingsEditable: jsondata.projectSettingsEditable } })
+        return true
+      }
+      else {
+        navigate('/error', { state: { ...jsondata } })
+      }
+    })
+      .catch(error => {
+        navigate('/error', {
+          state: {
+            status: '',
+            severity: 'error',
+            message: 'Connection error occured while obtaining the Project details'
+          }
+        }
+        )
+        return false
+      }
+      );
+
+  },[])
 
 
   return (
