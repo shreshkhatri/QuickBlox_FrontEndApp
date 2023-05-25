@@ -10,12 +10,12 @@ export default function BotWidget({ props, children }) {
   const dispatch = useAppStateDispatch()
   const appState = useAppStateContext()
   const [conversationID, setConversationID] = useState('')
-  const [botName, setBotName] = useState(decode(appState.settings.botName))
+  const [botName, setBotName] = useState(decode(appState.hasOwnProperty('settings') && appState.settings.hasOwnProperty('botName') && appState.settings.botName ))
   const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' })
   const [currentBotServerPort, setCurrentBotServerPort] = useState(appState.settings.hasOwnProperty('currentBotServerPort') && appState['settings']['currentBotServerPort'] || null)
   const [URL_GET_CONVERSATION_ID, setURL_GET_CONVERSATION_ID] = useState(`http://localhost:${currentBotServerPort}/directline/conversations`)
   const [COMMUNICATION_ENDPOINT, setCOMMUNICATION_ENDPOINT] = useState(`http://localhost:${currentBotServerPort}/directline/conversations/${conversationID}/activities`)
-  console.log(conversationID)
+  
 
 
   useEffect(async () => {
