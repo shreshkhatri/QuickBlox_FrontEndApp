@@ -58,10 +58,6 @@ function NewScript() {
         { stepLabel: 'Trigger an Intent', stepTypeIndex: 5 }
     ]
 
-    console.log(scriptFlow)
-    console.log(listOfResponseNames)
-
-
     //function to verify all details related to script are defined
     function isScriptDefinitionComplete() {
 
@@ -148,7 +144,7 @@ function NewScript() {
             scriptName,
             listOfResponseNames,
             scriptDescription,
-            triggeringIntent,
+            triggeringIntent:triggeringIntent||'',
             scriptFlow
         }
 
@@ -304,6 +300,7 @@ function NewScript() {
                     onStepRemove={onStepRemove}
                     onStepUpdate={onStepUpdate}
                     stepDefinitionComplete={stepDefinitionComplete}
+                    scriptName={scriptName}
                 />
 
             case 4:
@@ -313,6 +310,7 @@ function NewScript() {
                     onStepRemove={onStepRemove}
                     onStepUpdate={onStepUpdate}
                     stepDefinitionComplete={stepDefinitionComplete}
+                    scriptName={scriptName}
                 />
 
                 case 5:

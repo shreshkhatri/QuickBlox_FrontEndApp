@@ -7,27 +7,30 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import { formatQuery, QueryBuilder } from 'react-querybuilder';
 import ScriptBotResponse from "./ScriptBotResponse";
 import ScriptDynamicResponse from "./ScriptDynamicResponse";
 import ScriptLinkNewScript from "./ScriptLinkAnotherScript";
 import './ScriptCondition.css';
 import ScriptTriggerIntent from "./ScriptTriggerIntent";
-const initialQuery = {
-  combinator: 'and',
-  rules: [
-  ],
-};
+import { FormControl, FormLabel, FormControlLabel, FormGroup, Radio, RadioGroup, IconButton } from '@mui/material';
+import { InputLabel, Select, MenuItem } from '@mui/material';
+import { TextField, Autocomplete } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 export default function ScriptCondition(props) {
-  const [query, setQuery] = useState(initialQuery || props.query);
+
   const [expanded, setExpanded] = useState(true)
   const [changesSaved, setChangesSaved] = useState(true)
-  const [fields, setFields] = useState(props.listOfResponseNames || [])
   const [stepToRunIfTrue, updateStepToRunIfTrue] = useState(props.stepToRunIfTrue || {})
   const [selectedStepIndex, setSelectedStepIndex] = useState(undefined)
 
-
+  // newly added variables //
+  const [conditions, updateConditions] = useState(props.conditions || []);
+  const [connector, setConnector] = useState(props.connector || 'AND');
+  const [options, setOptions] = useState(props.listOfResponseNames.map(response =>response.name)  || []);
+  console.log('Conditions:', conditions);
+  console.log('Connector:', connector);
 
   const stepList = [
     { stepLabel: 'Bot Text Response', stepTypeIndex: 0 },
@@ -40,6 +43,74 @@ export default function ScriptCondition(props) {
   function onStepUpdate(stepID, update) {
     updateStepToRunIfTrue({ ...stepToRunIfTrue, ...update })
   }
+
+  const handleConnectorChange = (event) => {
+    setConnector(event.target.value);
+  };
+
+
+  const addCondition = () => {
+    updateConditions([...conditions, { contextVariable: '', inputContextVariable: '', operator: '', inputOperator: '', testValue: '' }]);
+  };
+
+  const deleteCondition = (index) => {
+    const updatedConditions = [...conditions];
+    updatedConditions.splice(index, 1);
+    updateConditions(updatedConditions);
+    setChangesSaved(false)
+  };
+
+ 
+    
+
+
+  const handleFilterOptions = (inputValue) => {
+    // Perform filtering logic here based on the inputValue
+    const filteredOptions = options.filter(option =>
+      option.toLowerCase().includes(inputValue.toLowerCase())
+    );
+    setOptions(filteredOptions);
+  };
+
+  function updateContextVariable(index, newVariable) {
+    updateConditions(previousConditions => {
+      const newConditions = [...previousConditions];
+      newConditions[index] = { ...newConditions[index], contextVariable: newVariable };
+      setChangesSaved(false)
+      return newConditions
+    })
+    
+  }
+
+  function updateInputContextVariable(index, newInputContextVariable) {
+    updateConditions(previousConditions => {
+      const newConditions = [...previousConditions];
+      newConditions[index] = { ...newConditions[index], inputContextVariable: newInputContextVariable };
+      
+      return newConditions
+    })
+    
+  }
+
+  function updateOperator(index, newOperator) {
+    updateConditions(previousConditions => {
+      const newConditions = [...previousConditions];
+      newConditions[index] = { ...newConditions[index], operator: newOperator };
+      setChangesSaved(false)
+      return newConditions
+    })
+    
+  }
+
+  function updateTestValue(index, newTestValue) {
+    updateConditions(previousConditions => {
+      const newConditions = [...previousConditions];
+      newConditions[index] = { ...newConditions[index], testValue: newTestValue };
+      setChangesSaved(false)
+      return newConditions
+    })
+  }
+
 
 
   return (
@@ -56,16 +127,94 @@ export default function ScriptCondition(props) {
 
       </AccordionSummary>
       <AccordionDetails>
-        <QueryBuilder
-          fields={fields}
-          query={query}
-          onQueryChange={q => {
-            setQuery(q);
-            setChangesSaved(false);
-            props.stepDefinitionComplete(props.stepID, false)
-          }}
-        />
-        {query.rules.length !== 0 &&
+        <Box display='flex' flexDirection='column' alignItems='left'>
+
+          <Typography align='left' sx={{ typography: 'subtitle1', fontWeight: 'bold', }}>Conditions</Typography>
+
+          <FormControl component="fieldset">
+            <FormLabel id="label-for-operator">Condition Connector</FormLabel>
+            <RadioGroup row
+              aria-aria-labelledby="label-for-operator"
+              name="connector"
+              value={connector}
+              onChange={handleConnectorChange}
+
+            >
+              <FormControlLabel value="AND" control={<Radio />} label="AND" />
+              <FormControlLabel value="OR" control={<Radio />} label="OR" />
+            </RadioGroup>
+          </FormControl>
+
+          <FormControl component="fieldset">
+            <FormGroup>
+              {conditions.map(({ contextVariable, inputContextVariable, operator, testValue }, index) => (
+                <Box key={index} display="flex" alignItems="center" sx={{ p: 1 }}>
+
+                  <Autocomplete
+                    fullWidth
+                    sx={{ paddingRight: 1 }}
+                    value={contextVariable}
+                    size='small'
+                    onChange={(event, newValue) => updateContextVariable(index, newValue)}
+                    inputValue={inputContextVariable}
+                    onInputChange={(event, newInputValue) => {
+                      const isExistingOption = options.includes(newInputValue);
+                      if (!isExistingOption) {
+                        updateContextVariable(index, newInputValue);
+                      }
+                      updateInputContextVariable(index, newInputValue);
+                    }}
+
+                    options={options}
+                    filterOptions={(options) => options} // Disable default filtering behavior
+                    onOpen={() => handleFilterOptions('')} // Reset filter when dropdown opens
+                    renderInput={(params) => (
+                      <TextField {...params} label="Select Context variable" variant="outlined" />
+                    )}
+                  />
+                  <FormControl sx={{ paddingRight: 1, width: '100%', maxWidth: 300 }}>
+                    <InputLabel>Operator</InputLabel>
+                    <Select value={operator} onChange={(e) => updateOperator(index, e.target.value)} placeholder='Opeartor ' size='small'>
+
+                      <MenuItem value="==">Equal to (==)</MenuItem>
+                      <MenuItem value="!=">Not equal to (!=)</MenuItem>
+                      <MenuItem value=">">Greater than (&gt;)</MenuItem>
+                      <MenuItem value="<">Less than (&lt;)</MenuItem>
+                      <MenuItem value=">=">Greater than or equal to (&gt;=)</MenuItem>
+                      <MenuItem value="<=">Less than or equal to (&lt;=)</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    sx={{ paddingRight: 1 }}
+                    id="outlined-basic"
+                    label="Test Value"
+                    variant="outlined"
+                    size='small'
+                    placeholder='Value'
+                    value={testValue}
+                    Autocomplete='off'
+                    fullWidth
+                    onChange={(e) => updateTestValue(index, e.target.value)}
+                  />
+                  <IconButton
+
+                    onClick={() => deleteCondition(index)}
+                    aria-label="delete"
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              ))}
+
+            </FormGroup>
+          </FormControl>
+          <Button onClick={addCondition}>Add Condition</Button>
+
+
+
+
+        </Box>
+        {conditions.length !== 0 &&
           <Box>
             <hr></hr>
             <Typography align='left' sx={{ typography: 'subtitle1', color: 'text.secondary' }}>Step to run if the condition is true</Typography>
@@ -84,6 +233,7 @@ export default function ScriptCondition(props) {
             {stepToRunIfTrue && stepToRunIfTrue.stepTypeIndex === 4 && <ScriptLinkNewScript {...stepToRunIfTrue}
               onStepUpdate={onStepUpdate}
               stepDefinitionComplete={props.stepDefinitionComplete}
+              scriptName={props.scriptName}
               hideDeleteButton={true} />}
 
             {stepToRunIfTrue && stepToRunIfTrue.stepTypeIndex === 5 && <ScriptTriggerIntent {...stepToRunIfTrue}
@@ -114,12 +264,13 @@ export default function ScriptCondition(props) {
         <Stack paddingTop={1} direction={{ xs: 'column', sm: 'column', md: 'row', lg: 'row' }} justifyContent='right' spacing={2}>
           <Button size="small" variant="outlined" disabled={changesSaved ? true : false} onClick={() => {
             //we should not save state either if there is not a single rule or no any condition is defined to be executed
-            if (query.rules.length === 0 || Object.keys(stepToRunIfTrue).length === 0) {
+            if (conditions.length === 0) {
               return
             }
             props.onStepUpdate(props.stepID,
               {
-                query,
+                conditions,
+                connector,
                 stepToRunIfTrue,
                 stepDefinitionComplete: true
               })

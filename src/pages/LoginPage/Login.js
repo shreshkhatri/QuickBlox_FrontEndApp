@@ -49,8 +49,6 @@ export default function LoginPage() {
     const [loginResponse, setLoginResponse] = useState(null)
     const [isLoggedIn,setIsLoggedIn] = useState(false)
     const [isProjectDataLoaded,setIsProjectDataLoaded]=useState(false)
-
-    console.log(appState)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -78,7 +76,7 @@ export default function LoginPage() {
 
                 if (response.status === 200) {
                     setLoginResponse({ code: response.severity, message: response.message })
-                    dispatch({ type: ACTION_TYPES.USER_LOGIN })
+                    dispatch({ type: ACTION_TYPES.USER_LOGIN,payload: { useremail }})
                     return true
                 }
                 else {

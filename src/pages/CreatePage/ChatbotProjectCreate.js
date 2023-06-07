@@ -118,7 +118,8 @@ export function CreateChatbotProject() {
             .then(response => {
                 if (response.status === 200) {
                     console.log(response)
-                    dispatcher({ type: ACTION_TYPES.USER_LOGIN })
+                    
+                    dispatcher({ type: ACTION_TYPES.USER_LOGIN,payload: { useremail }})
                     dispatcher({ type: ACTION_TYPES.SET_SELECTED_LANGUAGE, payload: { selectedLanguage: response.projectData.languages[0] } })
                     dispatcher({ type: ACTION_TYPES.SET_PROJECT, payload: { projectName: response.projectData.projectName } })
                     dispatcher({ type: ACTION_TYPES.SET_SETTINGS, payload: { settings: response.projectData.settings } })

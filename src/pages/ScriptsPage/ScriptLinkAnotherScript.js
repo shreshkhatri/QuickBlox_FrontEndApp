@@ -19,13 +19,9 @@ export default function ScriptLinkAnotherScript(props) {
     const [expanded, setExpanded] = useState(true)
     const [changesSaved, setChangesSaved] = useState(true)
     const [inputScriptName, setInputScriptName] = useState('')
-    const [linkedScript, setLinkedScript] = useState(props.linkedScript || null)
+    const [linkedScript, setLinkedScript] = useState(props.linkedScript || '')
     const [listOfScriptNames, setListOfScriptNames] = useState([])
-    console.log(linkedScript)
-
-
-    //useEffect for downloading the names of the existing scripts to be linked as
-
+    
     useEffect(() => {
         const fetchdata = async () => {
             await fetch(SERVER_URL + '/get-script-names', {
@@ -40,7 +36,7 @@ export default function ScriptLinkAnotherScript(props) {
                     projectName: appState.projectName,
                     locale: appState.selectedLanguage.locale
                 }),
-                credentials:'include'
+                credentials: 'include'
             }).then(response => {
                 if (response.status === 200) {
                     return response.json()
@@ -49,8 +45,7 @@ export default function ScriptLinkAnotherScript(props) {
                     throw new CustomError(response.status, response.statusText)
                 }
             }).then((jsondata) => {
-
-                setListOfScriptNames(jsondata.map(scriptData => scriptData.scriptName))
+                setListOfScriptNames([props.scriptName, ...jsondata.map(scriptData => scriptData.scriptName)])
             })
                 .catch(error => {
                     navigate('/error', { state: { error } })
@@ -59,7 +54,7 @@ export default function ScriptLinkAnotherScript(props) {
         if (appState.hasOwnProperty('projectName') && appState.hasOwnProperty('selectedLanguage')) {
             fetchdata()
         }
-    }, [])
+    }, [props.scriptName])
 
     return (
         <Accordion expanded={expanded} onChange={() => setExpanded(!expanded)}>
@@ -85,26 +80,29 @@ export default function ScriptLinkAnotherScript(props) {
                     value={linkedScript}
                     onChange={(e, newValue) => {
                         setLinkedScript(newValue);
-                        setChangesSaved(false)
-                        props.stepDefinitionComplete(props.stepID,false)
+                        setChangesSaved(false);
+                        props.stepDefinitionComplete(props.stepID, false);
                     }}
                     inputValue={inputScriptName}
                     onInputChange={(e, newInputValue) => {
                         setInputScriptName(newInputValue);
+                        setLinkedScript(newInputValue); // Update linkedScript with the current input value
                     }}
                     id="triggering-intent-selector"
                     options={listOfScriptNames}
                     noOptionsText="No Existing Scripts found"
-                    renderInput={(params) => <TextField {...params} label="...Script to be linked" />
-                    }
+                    renderInput={(params) => (
+                        <TextField {...params} label="...Script to be linked" />
+                    )}
                 />
+
 
                 <br></br>
                 <Stack paddingTop={1} direction={{ xs: 'column', sm: 'column', md: 'row', lg: 'row' }} justifyContent='right' spacing={2}>
                     <Button size="small" variant="outlined" disabled={changesSaved ? true : false} onClick={() => {
 
                         //initially the object is null
-                        if (!linkedScript){
+                        if (!linkedScript) {
                             return
                         }
 

@@ -10,6 +10,7 @@ import { Entities } from './pages/EntitiesPage/Entities'
 import { Botsettings } from './pages/BotsettingsPage/Botsettings'
 import {CreateChatbotProject} from './pages/CreatePage/ChatbotProjectCreate'
 import { DefaultThemeProvider } from './Theme'
+import Test from './pages/TestPage/Test'
 
 
 export const App = () => {
@@ -27,6 +28,7 @@ export const App = () => {
       <Route path='create-chatbot-project' element={<DefaultThemeProvider><CreateChatbotProject /></DefaultThemeProvider>} />
       <Route path='login' element={<DefaultThemeProvider><LoginPage></LoginPage></DefaultThemeProvider>} />
       <Route path='error' element={<DefaultThemeProvider><Error></Error></DefaultThemeProvider>} />
+      <Route path='test' element={<DefaultThemeProvider><Test></Test></DefaultThemeProvider>} />
 
       <Route path='*' element={<h1>ERROR ! Page not found</h1>} />
     </Routes>

@@ -92,7 +92,8 @@ async function updateIntentData() {
     var payload={
         'intent':props.intent,
         'description':props.description,
-        'utterances':utterances
+        'utterances':utterances,
+        'linkedScript':props.linkedScript
     };
     setLoading(true)
     

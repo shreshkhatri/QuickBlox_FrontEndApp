@@ -21,35 +21,45 @@ export const OpenAISettings = () => {
     const dispatcher = useAppStateDispatch()
     const appState = useAppStateContext();
     const navigate = useNavigate()
-    const openaisettings = appState &&
-        appState.hasOwnProperty('settings') &&
-        appState.settings.hasOwnProperty('openAISettings') &&
-        appState.settings.openAISettings || null
 
-    const [openAIApiKey, setOpenAIApiKey] = useState(openaisettings.openAIApiKey || '')
+
+    const [openAIApiKey, setOpenAIApiKey] = useState('') 
     const [listOfOpenAIModels, setListOfOpenAIModels] = useState([])
 
     const [isSavingChangs, setIsSavingChangs] = useState(false)
 
-    const [allowOpenAIResponseGeneration, setAllowOpenAIResponseGeneration] = useState(openaisettings.fallbackResponse.allow)
-    const [selectedOpenAIModelForResponseGeneration, setSelectedOpenAIModelForResponseGeneration] = useState(openaisettings.fallbackResponse.modelName)
+    const [allowOpenAIResponseGeneration, setAllowOpenAIResponseGeneration] = useState(false)
+    const [selectedOpenAIModelForResponseGeneration, setSelectedOpenAIModelForResponseGeneration] = useState('') 
     const [inputModelNameResponseGeneration, setInputModelNameResponseGeneration] = useState('');
     //const [selectedOpenAIModelForResponseGeneration, setSelectedOpenAIModelForResponseGeneration] = useState('')
 
-    const [allowOpenAIRephraseResponse, setAllowOpenAIRephraseResponse] = useState(openaisettings.rephraseBotResponse.allow)
-    const [selectedOpenAIModelForRephrasingBotResponse, setSelectedOpenAIModelForRephrasingBotResponse] = useState(openaisettings.rephraseBotResponse.modelName)
+    const [allowOpenAIRephraseResponse, setAllowOpenAIRephraseResponse] = useState(false)
+    const [selectedOpenAIModelForRephrasingBotResponse, setSelectedOpenAIModelForRephrasingBotResponse] = useState('') 
     const [inputModelNameRephraseResponse, setInputModelNameRephraseResponse] = useState('');
 
     //const [selectedOpenAIModelForRephrasingBotResponse, setSelectedOpenAIModelForRephrasingBotResponse] = useState('')
-    const [allowOpenAIDataAugmentation, setAllowOpenAIDataAugmentation] = useState(openaisettings.datasetGeneration.allow)
-    const [selectedOpenAIModelForQAndADataGeneration, setSelectedOpenAIModelForQAndADataGeneration] = useState(openaisettings.datasetGeneration.modelName)
+    const [allowOpenAIDataAugmentation, setAllowOpenAIDataAugmentation] = useState(false) 
+    const [selectedOpenAIModelForQAndADataGeneration, setSelectedOpenAIModelForQAndADataGeneration] = useState('') 
     const [inputModelNameDataAugmentation, setInputModelNameDataAugmentation] = useState('');
 
     //const [selectedOpenAIModelForQAndADataGeneration, setSelectedOpenAIModelForQAndADataGeneration] = useState('')
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' });
     const [stateChanged, setStateChanged] = useState(false)
 
-    console.log(openaisettings)
+    useEffect(()=>{
+        if (!(appState.hasOwnProperty('settings') && appState.settings.hasOwnProperty('openAISettings'))){
+            return;
+        }
+        const openaisettings = appState.settings.openAISettings;
+        setOpenAIApiKey(openaisettings.openAIApiKey)
+        setAllowOpenAIResponseGeneration(openaisettings.fallbackResponse.allow)
+        setSelectedOpenAIModelForResponseGeneration(openaisettings.fallbackResponse.modelName)
+        setAllowOpenAIRephraseResponse(openaisettings.rephraseBotResponse.allow)
+        setSelectedOpenAIModelForRephrasingBotResponse(openaisettings.rephraseBotResponse.modelName)
+        setAllowOpenAIDataAugmentation(openaisettings.datasetGeneration.allow)
+        setSelectedOpenAIModelForQAndADataGeneration(openaisettings.datasetGeneration.modelName)
+        
+    },[appState])
 
     useEffect(() => {
         setStateChanged(true)
@@ -64,6 +74,10 @@ export const OpenAISettings = () => {
     ])
 
     useEffect(async () => {
+
+        if (!appState.hasOwnProperty('projectName')){
+            return;
+        }
         await fetch(SERVER_URL + '/get-openAI-models-list', {
             method: "POST",
             redirect: 'follow',
@@ -105,7 +119,7 @@ export const OpenAISettings = () => {
                     message: 'Connection error occured while retrieving the OpenAI models'
                 })
             });
-    }, [])
+    }, [appState])
 
 
     function closeSnackbar() {

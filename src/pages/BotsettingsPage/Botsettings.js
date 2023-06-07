@@ -26,23 +26,38 @@ export const Botsettings = () => {
     const appState = useAppStateContext();
     const navigate = useNavigate()
     const [modelTrainable, setModelTrainable] = useState(false)
-    const [projectSettingsEditable, setProjectSettingsEditable] = useState(false)
-    const [projectName, setProjectName] = useState(decode(appState.projectName));
+    const [projectSettingsEditable, setProjectSettingsEditable] = useState()
+    const [projectName, setProjectName] = useState();
     const [training, setTraining] = useState(false);
-    const [botServerPort, setBotServerPort] = useState(appState.settings.botServerPort)
-    const [botName, setBotName] = useState(decode(appState.settings.botName))
+    const [botServerPort, setBotServerPort] = useState()
+    const [botName, setBotName] = useState()
     const [stateChanged, setStateChanged] = useState(false)
+    const [openAISettingsChanged, setOpenAISettingsChanged] = useState(false)
     const [isSavingProjectData, setIsSavingProjectData] = useState(false)
-    const [settings, setSettings] = useState(appState.settings);
+    const [settings, setSettings] = useState();
     const [trainingLog, setTrainingLog] = useState([]);
     const [textualizedLog, setTextualizedLog] = useState('')
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' });
     document.title = "Bot Settings " + AppTitle
     const [isBotServerOnline, setIsBotServerOnline] = useState(false);
 
+    console.log(appState)
     const memoizedOpenAISettings = useMemo(()=>{
         return <OpenAISettings></OpenAISettings>
     },[])
+
+
+    useEffect(()=>{
+        if (!appState.hasOwnProperty('settings')){
+            return;
+        }
+        setProjectName(decode(appState.projectName))
+        setBotServerPort(appState.settings.botServerPort)
+        setBotName(decode(appState.settings.botName))
+        setProjectSettingsEditable(appState.projectSettingsEditable)
+        setModelTrainable(appState.modelTrainable)
+        setSettings(appState.settings)
+    },[appState])
     
 
     useEffect(() => {
@@ -69,6 +84,10 @@ export const Botsettings = () => {
 
     //use effect for retrieving the status of the project
     useEffect(async () => {
+        if(!projectName){
+            return;
+        }
+
         await fetch(SERVER_URL + '/get-project-status', {
             method: "POST",
             redirect: 'follow',
@@ -110,7 +129,7 @@ export const Botsettings = () => {
                     message: 'Connection error occured while retrieving the project status. Please check your connection.'
                 })
             });
-    }, [])
+    }, [projectName])
 
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++
     const handleProjectDetailFormSubmit = async (event) => {
@@ -422,7 +441,7 @@ export const Botsettings = () => {
                         style={{
                             fontFamily: '"Fira code", "Fira Mono", monospace',
                             fontSize: 12,
-                            maxHeight:'10rem',
+                            maxHeight:'20rem',
                             overflowY:'scroll'
                         }}
                         disabled

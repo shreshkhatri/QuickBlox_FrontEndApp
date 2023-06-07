@@ -107,7 +107,8 @@ export default function NewIntent() {
         var payload = {
             intent,
             description,
-            utterances
+            utterances,
+            linkedScript:null
         }
 
         setLoading(true)

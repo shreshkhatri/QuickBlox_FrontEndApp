@@ -5,11 +5,11 @@ const AppStateContext=React.createContext()
 const AppStateDispatch=React.createContext()
 
 export function ApplicationContextProvider({children}){
-    console.log('Context Page')
+    
     const [cookies, setCookie] = useCookies(['access_token', 'useremail'])
     const [applicationState, dispatch] = useReducer(reducer, {
         loginstatus: cookies.access_token && cookies.useremail && true,
-        email:cookies.useremail,
+        useremail:cookies.useremail,
         modelTrainedAt:0
       });
 

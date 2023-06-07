@@ -108,8 +108,7 @@ export default function HomePage() {
   const appState = useAppStateContext()
   document.title = "Home " + AppTitle
   const navigate = useNavigate()
-  console.log('App State:', appState)
-
+  console.log(appState);
   const memoizedBotWidget=useMemo(()=>{
     return <BotWidget>{appState.modelTrainedAt}</BotWidget>
   },[appState.hasOwnProperty('modelTrainedAt') && appState.modelTrainedAt])
@@ -158,7 +157,7 @@ export default function HomePage() {
     }).then((jsondata) => {
       
       if (jsondata.status === 200) {
-        console.log(jsondata)
+        
         dispatch({ type: ACTION_TYPES.SET_SELECTED_LANGUAGE, payload: { selectedLanguage: jsondata.selectedLanguage } })
         dispatch({ type: ACTION_TYPES.SET_PROJECT, payload: { projectName: jsondata.projectName } })
         dispatch({ type: ACTION_TYPES.SET_SETTINGS, payload: { settings: JSON.parse(JSON.stringify(jsondata.settings)) } })
@@ -341,7 +340,6 @@ export default function HomePage() {
 
           </Grid>
         </Box>
-
       </Box>
       {memoizedBotWidget}
     </>

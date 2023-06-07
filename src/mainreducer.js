@@ -32,7 +32,7 @@ export function reducer(state, action) {
     case ACTION_TYPES.SET_SETTINGS:
       return { ...state, settings: action.payload.settings };
     case ACTION_TYPES.USER_LOGIN:
-      return { ...state, loginstatus: true };
+      return { ...state, loginstatus: true, useremail: action.payload.useremail };
     case ACTION_TYPES.USER_LOGOUT:
       return {};
     case ACTION_TYPES.PAGE_LOADING:

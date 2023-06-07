@@ -10,18 +10,38 @@ export default function BotWidget({ props, children }) {
   const dispatch = useAppStateDispatch()
   const appState = useAppStateContext()
   const [conversationID, setConversationID] = useState('')
-  const [botName, setBotName] = useState(decode(appState.hasOwnProperty('settings') && appState.settings.hasOwnProperty('botName') && appState.settings.botName ))
+  const [botName, setBotName] = useState('')
   const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' })
-  const [currentBotServerPort, setCurrentBotServerPort] = useState(appState.settings.hasOwnProperty('currentBotServerPort') && appState['settings']['currentBotServerPort'] || null)
-  const [URL_GET_CONVERSATION_ID, setURL_GET_CONVERSATION_ID] = useState(`http://localhost:${currentBotServerPort}/directline/conversations`)
+  const [currentBotServerPort, setCurrentBotServerPort] = useState(null)
+  const [URL_GET_CONVERSATION_ID, setURL_GET_CONVERSATION_ID] = useState()
   const [COMMUNICATION_ENDPOINT, setCOMMUNICATION_ENDPOINT] = useState(`http://localhost:${currentBotServerPort}/directline/conversations/${conversationID}/activities`)
-  
+  console.log(conversationID)
+  console.log(COMMUNICATION_ENDPOINT)
 
+  useEffect(()=>{
+    if (appState.hasOwnProperty('settings')){
+      setBotName(decode(appState.settings.botName))
+      setCurrentBotServerPort(appState.settings.currentBotServerPort)
+    }
+
+  },[appState]);
+
+  useEffect(() => {
+    if (!currentBotServerPort){
+      return;
+    }
+    setURL_GET_CONVERSATION_ID(`http://localhost:${currentBotServerPort}/directline/conversations`)
+    
+  }, [currentBotServerPort])
 
   useEffect(async () => {
-    console.log('Obtaining a conversation ID')
+    if (!URL_GET_CONVERSATION_ID){
+      return;
+    }
     await getConversationID()
-  }, [])
+  }, [URL_GET_CONVERSATION_ID])
+
+
 
   async function getConversationID() {
     await fetch(URL_GET_CONVERSATION_ID, {

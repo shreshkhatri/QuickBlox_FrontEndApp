@@ -10,6 +10,8 @@ function valuetext(value) {
 
 export default function ClassificationThresholdSelector({ settings, setSettings }) {
 
+  
+
   const marks = [
     {
       value: 0,
@@ -56,6 +58,8 @@ export default function ClassificationThresholdSelector({ settings, setSettings 
     },
 
   ];
+
+
   return (<>
     <Typography sx={{pb:4}}>Classification Threshold</Typography>
 
@@ -63,7 +67,7 @@ export default function ClassificationThresholdSelector({ settings, setSettings 
       min={0}
       max={1}
       aria-label="Always visible"
-      value={settings.nlu.threshold}
+      value={settings && settings.nlu.threshold || 0}
       getAriaValueText={valuetext}
       step={.01}
       marks={marks}

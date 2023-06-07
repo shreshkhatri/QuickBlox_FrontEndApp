@@ -19,11 +19,11 @@ import { isEmpty } from '../../Objects/CommonFunctions';
 import CustomSnackbar from '../../components/CustomSnackbar';
 
 export const QandA = () => {
+    const appState = useAppStateContext();
     const [loadingQandAdata, setLoadingQandAdata] = useState(false)
     const navigate = useNavigate()
     const [searching, setSearching] = useState(false)
     const [pageLoading, setpageLoading] = useState(true)
-    const appState = useAppStateContext();
     const [listOfQandAdata, setListOfQandAdata] = useState([])
     const [memoisedListOfQandAdata, setMemoisedListOfQandAdata] = useState([])
     const [clicked, setClick] = useState(true)
@@ -38,12 +38,18 @@ export const QandA = () => {
     const [numOfQandAdata, setNumOfQandAdata] = useState()
     const batchSize = 10
     const [numOfPages, setNumOfPages] = useState()
-    console.log(numOfQandAdata)
     console.log('num of pages', numOfPages)
 
 
     document.title = "Q&A data " + AppTitle
 
+    //useeffect for getting the number of count of qanda dataset
+    useEffect(() => {
+        if (appState.hasOwnProperty('selectedLanguage')){
+            getQandADatasetCount()
+        }
+    }, [appState])
+    
     //use effect for getting number of count for intent data from the database
     async function getQandADatasetCount() {
         console.log('requerying')
@@ -92,11 +98,6 @@ export const QandA = () => {
         setSnackBarPayload({ open: false, severity: '', message: '' })
     }
 
-    //useeffect for getting the number of count of qanda dataset
-    useEffect(() => {
-        getQandADatasetCount()
-    }, [])
-
     //useEffect for setting the page count
     useEffect(() => {
         setNumOfPages(Math.ceil(numOfQandAdata / batchSize))
@@ -105,6 +106,10 @@ export const QandA = () => {
     //useEffect for displaying the existing  qandA dataset for the selected language when the page
     //loads for the first time or is refreshed
     useEffect(() => {
+
+        if (!appState.hasOwnProperty('settings')){
+            return;
+        }
         setLoadingQandAdata(true)
         const fetchdata = async () => {
             await fetch(SERVER_URL + '/get-qana-data', {
@@ -159,7 +164,7 @@ export const QandA = () => {
 
         fetchdata()
 
-    }, [currentPage, numOfPages])
+    }, [currentPage, numOfPages,appState])
 
     function handlePageChange(value) {
         setCurrentPage(value)

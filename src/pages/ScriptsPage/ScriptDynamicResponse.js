@@ -22,8 +22,14 @@ export default function ScriptDynamicResponse(props) {
     const [snackBarPayload, setSnackBarPayload] = useState({ open: false, severity: '', message: '' })
     const navigate = useNavigate()
 
+    const original_action_name = props.actionName
+
     //use effect for setting the action Name and checking the availability of the names
     useEffect(() => {
+        if (actionName === original_action_name){
+            return;
+        }
+        
         checkAailabilityActionName(actionName)
     }, [actionName])
 

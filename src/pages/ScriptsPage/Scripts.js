@@ -83,8 +83,11 @@ export const Scripts = () => {
     }
     //useeffect for getting the count of Script dataset
     useEffect(async () => {
+        if (!appState.hasOwnProperty('settings')){
+            return;
+        }
         await getScriptsCount()
-    }, [])
+    }, [appState])
 
 
     //useEffect for setting the page count
@@ -97,6 +100,9 @@ export const Scripts = () => {
     //useEffect for displaying the existing  qandA dataset for the selected language when the page
     //loads for the first time or is refreshed
     useEffect(() => {
+        if (!appState.hasOwnProperty('settings')){
+            return;
+        }
         setLoadingScriptData(true)
         const fetchdata = async () => {
             await fetch(SERVER_URL + '/get-script-data', {
@@ -146,7 +152,7 @@ export const Scripts = () => {
         if (appState.hasOwnProperty('projectName') && appState.hasOwnProperty('selectedLanguage')) {
             fetchdata()
         }
-    }, [currentPage, numOfPages])
+    }, [currentPage, numOfPages,appState])
 
     function setSearchString(searchText) {
         searchBoxRef.current = searchText
@@ -175,7 +181,6 @@ export const Scripts = () => {
             body: JSON.stringify({
                 projectName: appState.projectName,
                 locale: appState.selectedLanguage.locale,
-                searchText: searchBoxRef.current
             }),
             credentials:'include'
         }).then(async response => {
